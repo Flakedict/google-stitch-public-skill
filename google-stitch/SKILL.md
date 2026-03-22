@@ -1,119 +1,119 @@
 ---
 name: google-stitch
-description: Google Stitch — AI UI design tool (stitch.withgoogle.com). Generates UI designs plus HTML/CSS from text prompts. Use for UI screen generation, design iteration, code export, and project/screen management via the Stitch MCP API.
+description: Google Stitch — AI UI design tool (stitch.withgoogle.com). Generate, edit, variant-test, and export UI screens via the Stitch MCP API/SDK. Use for UI screen generation, prompt enhancement, DESIGN.md-based design-system reuse, multi-page Stitch workflows, and HTML/CSS handoff.
 ---
 
 # Google Stitch Skill
 
 Stitch is Google's AI-native UI design canvas.
 
-Prompt → high-fidelity UI → HTML/CSS export.
+Prompt -> high-fidelity UI -> HTML/CSS export.
 
-## What it is good for
+This public version combines:
+- Stitch MCP / SDK usage patterns
+- prompt-enhancement ideas
+- DESIGN.md design-system reuse
+- multi-page workflow patterns
 
-Use Google Stitch when you want to:
-- generate UI screens from a text prompt
-- iterate on existing UI concepts
-- manage design projects/screens
-- export designs as HTML/CSS
-- create quick UI prototypes before implementation
+## Core Use Cases
 
-## API / MCP Endpoint
-
-Google Stitch exposes an MCP-compatible JSON-RPC endpoint:
-
-`https://stitch.googleapis.com/mcp`
+Use Stitch when you want to:
+- generate a UI screen from a text prompt
+- improve a weak prompt before generation
+- iterate on an existing screen with edits or variants
+- extract a reusable semantic design system into `DESIGN.md`
+- run a multi-page website/app flow screen by screen
+- export HTML/CSS for implementation handoff
 
 ## Authentication
 
-Use OAuth2 with a Google account that has access to Stitch.
+Use OAuth2 or an API key depending on your environment and access model.
+Do not hardcode private credentials into a shared skill.
 
-A typical flow is:
-1. obtain an OAuth2 access token
-2. send JSON-RPC requests to the Stitch MCP endpoint
-3. use the returned project/screen metadata and download URLs
+## MCP Endpoint
 
-> Do not hardcode credentials or share private tokens in the skill.
+`https://stitch.googleapis.com/mcp`
 
-## Available tools
+## Core Tools
 
-Typical Stitch MCP tools include:
+- `list_projects`
+- `get_project`
+- `create_project`
+- `list_screens`
+- `get_screen`
+- `generate_screen_from_text`
+- `edit_screens`
+- `generate_variants`
 
-| Tool | Description |
-|------|-------------|
-| `list_projects` | List projects |
-| `get_project` | Get project details |
-| `create_project` | Create a new project |
-| `list_screens` | List screens in a project |
-| `get_screen` | Get screen details and asset/download URLs |
-| `generate_screen_from_text` | Generate a UI screen from a prompt |
-| `edit_screens` | Edit existing screens |
-| `generate_variants` | Generate design variants |
+## Recommended Workflow
 
-## Example request
+### 1. Start with a good prompt
 
-```bash
-curl -s https://stitch.googleapis.com/mcp \
-  -H "Authorization: Bearer $ACCESS_TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "jsonrpc":"2.0",
-    "id":1,
-    "method":"tools/call",
-    "params":{
-      "name":"generate_screen_from_text",
-      "arguments":{
-        "projectId":"<PROJECT_ID>",
-        "prompt":"A dashboard with KPI cards and a line chart",
-        "deviceType":"DESKTOP"
-      }
-    }
-  }'
-```
+Before generating, improve the prompt.
 
-## Device types
-
-Supported `deviceType` values typically include:
-- `MOBILE`
-- `DESKTOP`
-- `TABLET`
-- `AGNOSTIC`
-
-## Prompting tips
-
-Be specific about:
-- device type
-- visual style
-- user goal
+Specify:
+- device type (`MOBILE`, `DESKTOP`, `TABLET`, `AGNOSTIC`)
+- page purpose
+- atmosphere / visual style
 - information hierarchy
 - important components
+- design-system constraints if they already exist
 
-### Good prompt
+Read `references/prompt-and-design-patterns.md` for the prompt-enhancement pattern.
 
-`Mobile onboarding for a fitness app, clean minimal layout, iOS-style, progress indicator, one CTA per screen`
+### 2. Build or reuse a semantic design system
 
-### Bad prompt
+For multi-screen work, treat `DESIGN.md` as the reusable source of truth.
 
-`nice screen`
+A good `DESIGN.md` captures:
+- visual atmosphere
+- color palette with semantic roles
+- typography rules
+- component styling rules
+- layout principles
+- a compact generation-oriented design block
 
-## Recommended workflow
+Read:
+- `references/prompt-and-design-patterns.md`
+- `references/design-md-template.md`
 
-1. create or choose a project
-2. generate a screen from a detailed prompt
-3. inspect the result
-4. refine via edit operations
-5. generate variants if needed
-6. export HTML/CSS for implementation
+### 3. Generate, edit, and variant-test deliberately
 
-## Example implementation workflow
+Use this sequence:
+1. generate one promising screen
+2. inspect result
+3. use `edit` for targeted changes
+4. use `variants` when direction is close but not right
+5. export only after direction is stable
 
-1. Generate screen via Stitch API
-2. Retrieve HTML/CSS export URL
-3. Download export
-4. Hand off to implementation agent / frontend workflow
+### 4. Use a Stitch loop for multi-page builds
 
-## Notes
+For websites/apps with several pages, use an iterative loop:
+1. define current page objective
+2. load design context (`DESIGN.md`)
+3. generate or edit the screen
+4. export HTML/image
+5. integrate into the site/app
+6. decide the next page
 
-- Stitch is strong for rapid UI ideation and structured iteration.
-- The best results come from specific prompts, not vague aesthetic wishes.
-- Keep credentials, local paths, project IDs, and private project names out of shared/public skill files.
+If the project benefits from explicit file structure, use the templates in:
+- `references/stitch-loop-files.md`
+
+### 5. Hand off to implementation
+
+Typical flow:
+1. generate screen via Stitch
+2. retrieve HTML export URL
+3. download/export HTML
+4. hand off HTML to the implementation workflow
+
+## SDK / Agent Usage
+
+If you want SDK-driven flows instead of raw MCP calls, read `references/sdk-and-tooling.md`.
+
+## References
+
+- `references/prompt-and-design-patterns.md`
+- `references/design-md-template.md`
+- `references/stitch-loop-files.md`
+- `references/sdk-and-tooling.md`
